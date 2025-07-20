@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Document Upload{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">Document Upload</h2>
+    <a href="{{ url_for('manual_check') }}" 
+       class="btn btn-outline-secondary d-flex align-items-center"
+       style="min-width: 220px; padding: 0.75rem 1.5rem;">
+      <span class="fs-5 me-2">🔍</span>
+      <span class="fs-5 fw-medium">CrossCheck</span>
+    </a>
+  </div>
+
+  <div class="card shadow-sm p-4 mb-5 border-start border-primary border-4">
+    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+      <!-- Ranking System Section -->
+      <div class="mb-4">
+        <h5 class="mb-3 text-primary fw-bold border-bottom pb-2">
+          Ranking System Selection
+        </h5>
+        
+        <div class="row align-items-center">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-medium">Ranking System:</label>
+            <select class="form-select" name="ranking_selection" id="rankingSelection" required>
+              <option value="default" selected>Default Ranking</option>
+              {% for filename, data in custom_rankings.items() %}
+                <option value="{{ filename }}">{{ filename }}</option>
+              {% endfor %}
+            </select>
+            <div class="form-text mt-1">Select ranking methodology</div>
+          </div>
+          
+          <div class="col-md-6 mb-3" id="customSheetContainer" style="display: none;">
+            <label class="form-label fw-medium">Worksheet:</label>
+            <select class="form-select" name="custom_sheet" id="customSheetSelect">
+              <!-- Sheets will be populated dynamically -->
+            </select>
+            <div class="form-text mt-1">Select specific worksheet</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Document Upload Section -->
+      <div class="mb-4">
+        <h5 class="mb-3 text-primary fw-bold border-bottom pb-2">
+          Document Submission
+        </h5>
+        
+        <div class="row">
+          <!-- Transcript -->
+          <div class="col-md-4 mb-3">
+            <div class="border-start border-3 border-primary ps-3 h-100">
+              <label class="form-label fw-medium">Transcript:</label>
+              <input type="file" class="form-control" name="transcript" accept=".pdf,.docx,.jpg,.jpeg,.png">
+              <div class="form-text mt-1">PDF, DOCX, or image files</div>
+            </div>
+          </div>
+          
+          <!-- CV/Resume -->
+          <div class="col-md-4 mb-3">
+            <div class="border-start border-3 border-primary ps-3 h-100">
+              <label class="form-label fw-medium">CV/Resume:</label>
+              <input type="file" class="form-control" name="cv" accept=".pdf,.docx,.jpg,.jpeg,.png">
+              <div class="form-text mt-1">PDF, DOCX, or image files</div>
+            </div>
+          </div>
+          
+          <!-- Reference Letter -->
+          <div class="col-md-4 mb-3">
+            <div class="border-start border-3 border-primary ps-3 h-100">
+              <label class="form-label fw-medium">Reference Letter:</label>
+              <input type="file" class="form-control" name="reference" accept=".pdf,.docx,.jpg,.jpeg,.png">
+              <div class="form-text mt-1">PDF, DOCX, or image files</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Submit Button -->
+      <div class="d-grid mt-4 pt-2">
+        <button type="submit" 
+                class="btn btn-primary d-flex align-items-center justify-content-center mx-auto"
+                style="min-width: 220px; padding: 0.75rem 1.5rem;">
+          <i class="bi bi-cloud-arrow-up fs-5 me-2"></i>
+          <span class="fs-5 fw-medium">Submit Documents</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const rankingSelect = document.getElementById('rankingSelection');
+    const sheetContainer = document.getElementById('customSheetContainer');
+    const sheetSelect = document.getElementById('customSheetSelect');
+    
+    // Get custom ranking sheets data
+    const customRankings = {
+      {% for filename, data in custom_rankings.items() %}
+        '{{ filename }}': {{ data.sheets|tojson }},
+      {% endfor %}
+    };
+    
+    // Handle ranking selection change
+    rankingSelect.addEventListener('change', function() {
+      const selectedValue = this.value;
+      
+      if (selectedValue !== 'default' && customRankings[selectedValue]) {
+        // Show sheet selector
+        sheetContainer.style.display = 'block';
+        
+        // Populate sheet options
+        sheetSelect.innerHTML = '';
+        customRankings[selectedValue].forEach(function(sheet) {
+          const option = document.createElement('option');
+          option.value = sheet;
+          option.textContent = sheet;
+          sheetSelect.appendChild(option);
+        });
+      } else {
+        // Hide sheet selector for default ranking
+        sheetContainer.style.display = 'none';
+      }
+    });
+    
+    // Trigger change event to initialize state
+    rankingSelect.dispatchEvent(new Event('change'));
+  });
+</script>
+{% endblock %}

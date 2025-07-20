@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Search Institutions{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">Search Institution</h2>
+    <a href="{{ url_for('upload') }}" 
+       class="btn btn-outline-secondary d-flex align-items-center"
+       style="min-width: 220px; padding: 0.75rem 1.5rem;">
+      <span class="fs-5 me-2">📤</span>
+      <span class="fs-5 fw-medium">Upload Documents</span>
+    </a>
+  </div>
+
+  <div class="card shadow-sm p-4 mb-4 border-start border-primary border-4">
+    <form method="POST" class="needs-validation" novalidate>
+      <!-- Ranking System Section -->
+      <div class="mb-4">
+        <h5 class="mb-3 text-primary fw-bold border-bottom pb-2">
+          Ranking System Selection
+        </h5>
+        
+        <div class="row align-items-center">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-medium">Ranking System:</label>
+            <select class="form-select" name="ranking_selection" id="rankingSelection" required>
+              <option value="default" {% if ranking_prefs.system == 'default' %}selected{% endif %}>Default Ranking</option>
+              {% for filename, data in custom_rankings.items() %}
+                <option value="{{ filename }}" {% if ranking_prefs.system == filename %}selected{% endif %}>{{ filename }}</option>
+              {% endfor %}
+            </select>
+            <div class="form-text mt-1">Select ranking methodology</div>
+          </div>
+          
+          <div class="col-md-6 mb-3" id="customSheetContainer" style="display: {% if ranking_prefs.system != 'default' %}block{% else %}none{% endif %};">
+            <label class="form-label fw-medium">Worksheet:</label>
+            <select class="form-select" name="custom_sheet" id="customSheetSelect">
+              {% if ranking_prefs.system != 'default' %}
+                {% for sheet in custom_rankings[ranking_prefs.system]['sheets'] %}
+                  <option value="{{ sheet }}" {% if ranking_prefs.sheet == sheet %}selected{% endif %}>{{ sheet }}</option>
+                {% endfor %}
+              {% endif %}
+            </select>
+            <div class="form-text mt-1">Select specific worksheet</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Institution Search Section -->
+      <div class="mb-4">
+        <h5 class="mb-3 text-primary fw-bold border-bottom pb-2">
+          Institution Search
+        </h5>
+        
+        <label for="institution-input" class="form-label">Enter full or partial name of the institution:</label>
+        <input id="institution-input" type="text" name="institution_name"
+               class="form-control form-control-lg mb-4" placeholder="Start typing institution name..." 
+               value="{{ query if query else '' }}" autocomplete="off" required>
+      </div>
+      
+      <div class="text-center">
+        <button type="submit" 
+                class="btn btn-primary btn-lg d-flex align-items-center justify-content-center mx-auto"
+                style="min-width: 220px; padding: 0.75rem 1.5rem;">
+          <span class="fs-5 me-2">🔍</span>
+          <span class="fs-5 fw-medium">Search</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {% if query and not result %}
+    <div class="alert alert-danger">
+      No matching institution found for "<strong>{{ query }}</strong>" in the selected ranking system. Please double-check the name.
+    </div>
+  {% endif %}
+
+  {% if result %}
+    <div class="card mt-4 shadow-sm">
+      <div class="card-header bg-info text-white">Institution Details</div>
+      <div class="card-body">
+        <p><strong>Institution:</strong> {{ result['Name of Institution'] }}</p>
+        <p><strong>City:</strong> {{ result['City'] }}</p>
+        <p><strong>State:</strong> {{ result['State'] }}</p>
+        <p><strong>Ranking System:</strong> {{ result['ranking_system'] }}</p>
+        {% if result['sheet_name'] %}
+          <p><strong>Worksheet:</strong> {{ result['sheet_name'] }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if result['Tier 1'] %}
+      <div class="card mt-3 shadow-sm">
+        <div class="card-header bg-success text-white">Tier 1 Rankings</div>
+        <div class="card-body">
+          {% for k, v in result['Tier 1'].items() %}
+            <span class="badge bg-success me-2 mb-2">{{ k }}: {{ v }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if result['Tier 2'] %}
+      <div class="card mt-3 shadow-sm">
+        <div class="card-header bg-warning text-dark">Tier 2 Rankings</div>
+        <div class="card-body">
+          {% for k, v in result['Tier 2'].items() %}
+            <span class="badge bg-warning text-dark me-2 mb-2">{{ k }}: {{ v }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% if result and result['Global'] %}
+    <div class="card mt-3 shadow-sm">
+      <div class="card-header bg-info text-white">Global Rankings</div>
+      <div class="card-body">
+        {% for k, v in result['Global'].items() %}
+          <span class="badge bg-info me-2 mb-2">{{ k }}: {{ v }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- jQuery + jQuery UI for Autocomplete -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+<script>
+  $(function() {
+      const rankingSelect = document.getElementById('rankingSelection');
+      const sheetContainer = document.getElementById('customSheetContainer');
+      const sheetSelect = document.getElementById('customSheetSelect');
+      const institutionInput = document.getElementById('institution-input');
+      
+      // Get custom ranking sheets data
+      const customRankings = {
+          {% for filename, data in custom_rankings.items() %}
+              '{{ filename }}': {{ data.sheets|tojson }},
+          {% endfor %}
+      };
+      
+      // Initialize autocomplete once
+      $(institutionInput).autocomplete({
+          minLength: 2,
+          source: function(request, response) {
+              $.getJSON("/get-institution-names", {
+                  ranking_system: rankingSelect.value,
+                  sheet_name: rankingSelect.value !== 'default' ? sheetSelect.value : '',
+                  term: request.term
+              }, response);
+          },
+          focus: function(event, ui) {
+              // Prevent value insertion on focus
+              return false;
+          },
+          select: function(event, ui) {
+              // Set the selected value
+              this.value = ui.item.label;
+              return false;
+          }
+      }).autocomplete("instance")._renderItem = function(ul, item) {
+          const term = this.term.toLowerCase();
+          const name = item.label;
+          const index = name.toLowerCase().indexOf(term);
+          
+          if (index >= 0) {
+              const before = name.substring(0, index);
+              const match = name.substring(index, index + term.length);
+              const after = name.substring(index + term.length);
+              
+              return $("<li>")
+                  .append(`<div>${before}<strong>${match}</strong>${after}</div>`)
+                  .appendTo(ul);
+          }
+          return $("<li>").append(`<div>${name}</div>`).appendTo(ul);
+      };
+      
+      // Handle ranking selection change
+      rankingSelect.addEventListener('change', function() {
+          const selectedValue = this.value;
+          
+          if (selectedValue !== 'default' && customRankings[selectedValue]) {
+              // Show sheet selector
+              sheetContainer.style.display = 'block';
+              
+              // Populate sheet options
+              sheetSelect.innerHTML = '';
+              customRankings[selectedValue].forEach(function(sheet) {
+                  const option = document.createElement('option');
+                  option.value = sheet;
+                  option.textContent = sheet;
+                  sheetSelect.appendChild(option);
+              });
+          } else {
+              // Hide sheet selector for default ranking
+              sheetContainer.style.display = 'none';
+          }
+          
+          // Clear input and refresh autocomplete
+          institutionInput.value = '';
+          $(institutionInput).autocomplete("search", "");
+      });
+      
+      // Handle sheet selection change
+      sheetSelect.addEventListener('change', function() {
+          // Clear input and refresh autocomplete
+          institutionInput.value = '';
+          $(institutionInput).autocomplete("search", "");
+      });
+  });
+  </script>
+{% endblock %}

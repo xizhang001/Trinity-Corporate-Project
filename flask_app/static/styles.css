@@ -1,0 +1,127 @@
+/* === General Styles === */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  /* === Typography === */
+  h2, h3, h4, h5 {
+    color: #003366;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  
+  p, li {
+    font-size: 15.5px;
+  }
+  
+  /* === Navbar === */
+  .navbar-brand {
+    font-weight: bold;
+    font-size: 1.3rem;
+  }
+  
+  .nav-link {
+    font-weight: 500;
+    color: #ffffff !important;
+  }
+  
+  .nav-link:hover {
+    color: #d1e0ff !important;
+  }
+  
+  /* === Cards & Containers === */
+  .card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+  
+  .card-header {
+    font-weight: 600;
+  }
+  
+  /* === Forms === */
+  .form-control {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    padding: 0.5rem 0.75rem;
+    font-size: 15px;
+  }
+  
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+  }
+  
+  .form-text {
+    font-size: 14px;
+  }
+  
+  /* === Buttons === */
+  .btn-primary {
+    background-color: #004a99;
+    border-color: #004a99;
+    font-weight: 500;
+    padding: 0.45rem 1rem;
+    font-size: 15px;
+  }
+  
+  .btn-primary:hover {
+    background-color: #003366;
+    border-color: #003366;
+  }
+  
+  .btn-outline-primary {
+    color: #004a99;
+    border-color: #004a99;
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #004a99;
+    color: white;
+  }
+  
+  /* === Alerts === */
+  .alert {
+    border-radius: 6px;
+    font-size: 15px;
+    padding: 0.75rem 1.25rem;
+  }
+  
+  /* === Preformatted Text (Extracted Text) === */
+  pre {
+    background-color: #f8f9fa;
+    font-family: Consolas, monospace;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    white-space: pre-wrap;
+  }
+  
+  /* === Spinner === */
+  #loading-spinner {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  /* === Autocomplete Styles (jQuery UI) === */
+  .ui-autocomplete {
+    z-index: 1051 !important;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  
+  /* === Section Headers === */
+  section {
+    margin-bottom: 2rem;
+  }
+  

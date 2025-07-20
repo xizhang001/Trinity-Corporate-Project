@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Institution Ranking Checker{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    :root {
+      --primary: #1a56db;
+      --secondary: #6c757d;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #f5f7fb;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    h1, h2, h3, h4, h5, .navbar-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+    }
+    
+    .navbar {
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, var(--primary) 0%, #0c4cb3 100%);
+      padding: 0;
+    }
+    
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      transition: transform 0.3s ease;
+      padding: 0.5rem 1rem;
+    }
+    
+    .navbar-brand:hover {
+      transform: translateX(-5px);
+    }
+    
+    .navbar-nav .nav-link {
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      position: relative;
+    }
+    
+    .navbar-nav .nav-link i {
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
+    
+    .navbar-nav .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .navbar-toggler {
+      border: none;
+      box-shadow: none !important;
+      margin-right: 1rem;
+    }
+    
+    .container {
+      max-width: 1200px;
+    }
+    
+    .main-content {
+      flex: 1;
+      padding: 2rem 0;
+    }
+    
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card.border-start {
+      border-left-width: 5px !important;
+    }
+    
+    footer {
+      background: linear-gradient(135deg, var(--dark) 0%, #343a40 100%);
+      color: white;
+      padding: 2rem 0;
+      margin-top: auto;
+    }
+    
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+      text-decoration: underline;
+    }
+    
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      margin-right: 10px;
+      transition: all 0.3s ease;
+    }
+    
+    .social-links a:hover {
+      background-color: var(--primary);
+      transform: translateY(-3px);
+    }
+    
+    .alert {
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn {
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn i {
+      margin-right: 8px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-lg {
+      padding: 0.75rem 1.75rem;
+    }
+    
+    .form-control, .form-select {
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ced4da;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.25rem rgba(26, 86, 219, 0.15);
+    }
+    
+    /* Navigation Improvements */
+    .navbar-nav {
+      display: flex;
+      width: 100%;
+    }
+    
+    .nav-item {
+      flex: 1 0 auto;
+      text-align: center;
+      display: flex;
+    }
+    
+    .nav-link {
+      flex-grow: 1;
+    }
+    
+    @media (min-width: 992px) {
+      .nav-item {
+        flex: 1;
+      }
+      
+      .nav-link:after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 25%;
+        height: 50%;
+        width: 1px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+      
+      .nav-item:last-child .nav-link:after {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 991.98px) {
+      .navbar-nav {
+        flex-direction: column;
+      }
+      
+      .nav-item {
+        width: 100%;
+        margin-bottom: 0.25rem;
+      }
+      
+      /* Shutdown button styling */
+      .nav-shutdown {
+        color: #ff6b6b !important;
+        background-color: rgba(255, 107, 107, 0.1) !important;
+      }
+      
+      .nav-shutdown:hover {
+        background-color: rgba(255, 107, 107, 0.2) !important;
+        color: #ff0000 !important;
+      }
+      
+      .shutdown-modal .modal-header {
+        background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+        color: white;
+      }
+      
+      .navbar-brand span {
+        display: none;
+      }
+    }
+    
+    /* Dashboard Styling */
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0.5rem 0;
+    }
+    
+    .stat-label {
+      color: var(--secondary);
+      font-size: 1rem;
+    }
+    
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      font-size: 1.75rem;
+    }
+    
+    .bg-icon-primary {
+      background-color: rgba(26, 86, 219, 0.1);
+      color: var(--primary);
+    }
+    
+    .bg-icon-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    .bg-icon-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+    
+    .bg-icon-accent {
+      background-color: rgba(14, 165, 233, 0.1);
+      color: var(--accent);
+    }
+    
+    .recent-activity {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .activity-item {
+      display: flex;
+      padding: 1rem 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+    
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .activity-content {
+      flex-grow: 1;
+    }
+    
+    .activity-time {
+      color: var(--secondary);
+      font-size: 0.85rem;
+    }
+    
+    .university-card {
+      transition: all 0.3s ease;
+    }
+    
+    .university-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .ranking-badge {
+      position: absolute;
+      top: -10px;
+      right: 15px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Upload area styling */
+    .upload-area {
+      border: 2px dashed #ced4da;
+      border-radius: 12px;
+      padding: 3rem;
+      text-align: center;
+      background: rgba(245, 247, 251, 0.5);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+    }
+    
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(26, 86, 219, 0.05);
+    }
+    
+    .upload-icon {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    /* Search box styling */
+    .search-container {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary);
+    }
+    
+    .search-input {
+      padding-left: 45px;
+      border-radius: 50px;
+      height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container-fluid px-lg-4">
+      <a class="navbar-brand" href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="University Ranking Checker" height="60">
+        <span class="ms-3">Ranking Checker</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == url_for('index') %}active{% endif %}" href="{{ url_for('index') }}">
+              <i class="bi bi-house-door me-2"></i> Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == url_for('manage_rankings') %}active{% endif %}" href="{{ url_for('manage_rankings') }}">
+              <i class="bi bi-bar-chart me-2"></i> Manage
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == url_for('upload') %}active{% endif %}" href="{{ url_for('upload') }}">
+              <i class="bi bi-upload me-2"></i> Upload
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == url_for('results') %}active{% endif %}" href="{{ url_for('results') }}">
+              <i class="bi bi-bar-chart me-2"></i> Results
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == url_for('manual_check') %}active{% endif %}" href="{{ url_for('manual_check') }}">
+              <i class="bi bi-search me-2"></i> Crosscheck
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == url_for('search') %}active{% endif %}" href="{{ url_for('search') }}">
+              <i class="bi bi-binoculars me-2"></i> Search
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == url_for('history') %}active{% endif %}" href="{{ url_for('history') }}">
+              <i class="bi bi-clock-history me-2"></i> History
+            </a>
+          </li>
+          <!-- Shutdown Button -->
+          <li class="nav-item">
+            <a class="nav-link nav-shutdown" href="#" data-bs-toggle="modal" data-bs-target="#shutdownModal">
+              <i class="bi bi-power me-2"></i> Shutdown
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Shutdown Confirmation Modal -->
+  <div class="modal fade shutdown-modal" id="shutdownModal" tabindex="-1" aria-labelledby="shutdownModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="shutdownModalLabel">Confirm Server Shutdown</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Warning:</strong> This action will terminate the server!
+          </div>
+          <p>Are you sure you want to shut down the University Ranking Checker server?</p>
+          <p class="text-muted">This will stop all operations and disconnect all users.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmShutdown">
+            <i class="bi bi-power me-1"></i> Shutdown Server
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  <div class="container mt-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      {% block content %}
+      <!-- Default content if no block is defined -->
+      <!-- Dashboard Header -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="d-flex justify-content-between align-items-center">
+            <h1 class="mb-0">Institution Ranking Dashboard</h1>
+            <div>
+              <span class="badge bg-primary p-2">Last Updated: Today</span>
+            </div>
+          </div>
+          <hr>
+        </div>
+      </div>
+      
+      <!-- Stats Cards -->
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-icon bg-icon-primary">
+            <i class="bi bi-building"></i>
+          </div>
+          <div class="stat-number">1,240</div>
+          <div class="stat-label">Universities Tracked</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon bg-icon-success">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <div class="stat-number">8,742</div>
+          <div class="stat-label">Documents Processed</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon bg-icon-warning">
+            <i class="bi bi-graph-up"></i>
+          </div>
+          <div class="stat-number">24</div>
+          <div class="stat-label">Ranking Systems</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon bg-icon-accent">
+            <i class="bi bi-people"></i>
+          </div>
+          <div class="stat-number">36</div>
+          <div class="stat-label">Active Users</div>
+        </div>
+      </div>
+      
+      <!-- Action Cards -->
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card border-start border-primary">
+            <div class="card-body">
+              <h5 class="card-title d-flex align-items-center">
+                <i class="bi bi-upload text-primary me-2"></i> Upload Documents
+              </h5>
+              <p class="card-text">Upload academic documents to automatically verify university rankings and accreditation status.</p>
+              
+              <div class="upload-area">
+                <div class="upload-icon">
+                  <i class="bi bi-cloud-arrow-up"></i>
+                </div>
+                <h5>Drag & Drop Files Here</h5>
+                <p class="text-muted">PDF, DOCX, or image files (max 10MB each)</p>
+                <a href="{{ url_for('upload') }}" class="btn btn-primary mt-2">
+                  <i class="bi bi-folder2-open me-2"></i> Browse Files
+                </a>
+              </div>
+              
+              <div class="d-flex justify-content-between mt-3">
+                <div>
+                  <i class="bi bi-info-circle me-2 text-primary"></i>
+                  <span class="text-muted">Supports multi-file upload</span>
+                </div>
+                <div>
+                  <i class="bi bi-clock-history me-2 text-primary"></i>
+                  <span class="text-muted">Processing time: 2-5 min</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4">
+          <div class="card border-start border-success">
+            <div class="card-body">
+              <h5 class="card-title d-flex align-items-center">
+                <i class="bi bi-search text-success me-2"></i> Quick Search
+              </h5>
+              <p class="card-text">Find universities by name, location, or ranking.</p>
+              
+              <div class="search-container">
+                <div class="search-icon">
+                  <i class="bi bi-search"></i>
+                </div>
+                <input type="text" class="form-control search-input" placeholder="Search universities...">
+              </div>
+              
+              <div class="mt-3">
+                <h6>Recent Searches:</h6>
+                <ul class="list-group">
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Trinity College Dublin
+                    <span class="badge bg-success">Top 100</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    University of Oxford
+                    <span class="badge bg-primary">#1</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Stanford University
+                    <span class="badge bg-info">Top 5</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {% endblock %}
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h5>Institution Ranking Checker</h5>
+          <p class="mt-3">Simplifying academic recognition through advanced document analysis and institution matching.</p>
+        </div>
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h5>Quick Links</h5>
+          <ul class="list-unstyled footer-links mt-3">
+            <li class="mb-2"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="mb-2"><a href="{{ url_for('upload') }}">Document Upload</a></li>
+            <li class="mb-2"><a href="{{ url_for('manual_check') }}">Crosscheck</a></li>
+            <li class="mb-2"><a href="{{ url_for('search') }}">Institution Search</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact Us</h5>
+          <ul class="list-unstyled mt-3">
+            <li class="mb-3">
+              <strong>Xi Zhang</strong><br>
+              <i class="bi bi-envelope me-2"></i> zhangx32@tcd.ie
+            </li>
+            <li class="mb-3">
+              <strong>Yeyang Zhang</strong><br>
+              <i class="bi bi-envelope me-2"></i> yezhang@tcd.ie
+            </li>
+            <li class="mb-3">
+              <strong>Zhan Gao</strong><br>
+              <i class="bi bi-envelope me-2"></i> gaozh@tcd.ie
+            </li>
+            <li>
+              <strong>Deepika Bommareddy</strong><br>
+              <i class="bi bi-envelope me-2"></i> bommared@tcd.ie
+            </li>
+          </ul>
+        </div>
+      </div>
+      <hr class="my-4 bg-light">
+      <div class="text-center">
+        <p class="mb-0">&copy; 2025 University Ranking Checker. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const shutdownBtn = document.getElementById('confirmShutdown');
+      if (shutdownBtn) {
+        shutdownBtn.addEventListener('click', async function() {
+          const button = this;
+          const originalHTML = button.innerHTML;
+          
+          // Show loading state
+          button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Shutting down...';
+          button.disabled = true;
+          
+          try {
+            // Send shutdown request
+            const response = await fetch('/shutdown', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (response.ok) {
+              // Hide the modal
+              const modal = bootstrap.Modal.getInstance(document.getElementById('shutdownModal'));
+              modal.hide();
+              
+              // Remove the modal backdrop
+              document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+              
+              // Display shutdown confirmation
+              document.body.innerHTML = `
+                <div class="container my-5">
+                  <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                      <div class="alert alert-success">
+                        <h2 class="mb-3"><i class="bi bi-check-circle-fill"></i> Server Shutdown Complete</h2>
+                        <p class="lead">The University Ranking Checker server has been successfully shut down.</p>
+                        <div class="alert alert-info mt-4">
+                          <h4><i class="bi bi-info-circle-fill me-2"></i>Next Steps</h4>
+                          <p class="mb-1">1. You can now safely close this browser tab</p>
+                          <p class="mb-0">2. The application server has been terminated</p>
+                        </div>
+                        <p class="mt-4 text-muted">
+                          <i class="bi bi-exclamation-triangle me-1"></i>
+                          This tab will automatically refresh in 10 seconds to confirm server shutdown. In the mean time feel free to close tab.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+              
+              // Set timeout to check if server is down
+              setTimeout(() => {
+                location.reload();
+              }, 10000);
+            } else {
+              const data = await response.json();
+              throw new Error(data.error || 'Server responded with error');
+            }
+          } catch (error) {
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+            
+            // Show error alert in modal
+            const modalBody = document.querySelector('#shutdownModal .modal-body');
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger';
+            alert.innerHTML = `
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <strong>Shutdown Error:</strong> ${error.message || 'Unknown error occurred'}
+            `;
+            modalBody.prepend(alert);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => alert.remove(), 5000);
+          }
+        });
+      }
+
+      // Add hover effect to university cards
+      const cards = document.querySelectorAll('.university-card');
+      cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          card.style.transform = 'translateY(-5px)';
+          card.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = '';
+          card.style.boxShadow = '';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

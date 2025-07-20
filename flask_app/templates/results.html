@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2 class="text-primary mb-4">Institution Ranking Information</h2>
+
+  {% if not result %}
+    <div class="alert alert-warning mt-4">
+      <strong>No institution was matched.</strong><br>
+      Please verify the uploaded documents or try the <a href="{{ url_for('manual_check') }}">CrossCheck</a> page for more insight.
+    </div>
+  {% else %}
+    <!-- Extraction Details Card -->
+    <div class="card p-4 shadow-sm mb-4 border-start border-info border-4">
+      <h5 class="text-info">Extraction Details</h5>
+      <hr>
+      <p><strong>Source:</strong> {{ source }}</p>
+      <p><strong>Method:</strong> {{ extraction_method }}</p>
+      
+      <!-- Evidence Display -->
+      {% if extraction_method == 'LLM' %}
+        <div class="alert alert-success p-3">
+          <p class="mb-1"><strong>🔍 Llama Evidence:</strong></p>
+          <pre class="mb-0">{{ llm_evidence }}</pre>
+        </div>
+        {% if llm_degree %}
+          <div class="alert alert-info p-3">
+            <p class="mb-1"><strong>🎓 Degree Level:</strong></p>
+            <p class="mb-0">{{ llm_degree }}</p>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="alert alert-warning p-3">
+          <p class="mb-1"><strong>🔍 Traditional Matching Evidence:</strong></p>
+          <pre class="mb-0">{{ match_snippet }}</pre>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="card p-4 shadow-sm border-start border-primary border-4">
+      <h4 class="text-primary">Basic Information</h4>
+      <hr>
+      <p><strong>Institution:</strong> {{ result.get('Name of Institution', 'N/A') }}</p>
+      <p><strong>City:</strong> {{ result.get('City', 'N/A') }}</p>
+      <p><strong>State:</strong> {{ result.get('State', 'N/A') }}</p>
+    </div>
+
+    {% if result.get('Tier 1') %}
+      <div class="card p-4 shadow-sm mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 text-success">Tier 1 Rankings</h5>
+          <button class="btn btn-sm btn-outline-success d-flex align-items-center" 
+                  type="button" 
+                  data-bs-toggle="collapse" 
+                  data-bs-target="#tier1Collapse" 
+                  aria-expanded="true" 
+                  aria-controls="tier1Collapse"
+                  style="padding: 0.25rem 0.75rem;">
+            <span class="me-1">↕</span>
+            <span>Toggle</span>
+          </button>
+        </div>
+        <hr>
+        <div class="collapse show" id="tier1Collapse">
+          <ul class="mb-0">
+            {% for key, value in result['Tier 1'].items() %}
+              <li><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if result.get('Tier 2') %}
+      <div class="card p-4 shadow-sm mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 text-warning">Tier 2 Rankings</h5>
+          <button class="btn btn-sm btn-outline-warning d-flex align-items-center" 
+                  type="button" 
+                  data-bs-toggle="collapse" 
+                  data-bs-target="#tier2Collapse" 
+                  aria-expanded="true" 
+                  aria-controls="tier2Collapse"
+                  style="padding: 0.25rem 0.75rem;">
+            <span class="me-1">↕</span>
+            <span>Toggle</span>
+          </button>
+        </div>
+        <hr>
+        <div class="collapse show" id="tier2Collapse">
+          <ul class="mb-0">
+            {% for key, value in result['Tier 2'].items() %}
+              <li><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if result.get('Global') %}
+      <div class="card p-4 shadow-sm mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 text-info">Global Rankings</h5>
+          <button class="btn btn-sm btn-outline-info d-flex align-items-center" 
+                  type="button" 
+                  data-bs-toggle="collapse" 
+                  data-bs-target="#globalCollapse" 
+                  aria-expanded="true" 
+                  aria-controls="globalCollapse"
+                  style="padding: 0.25rem 0.75rem;">
+            <span class="me-1">↕</span>
+            <span>Toggle</span>
+          </button>
+        </div>
+        <hr>
+        <div class="collapse show" id="globalCollapse">
+          <ul class="mb-0">
+            {% for key, value in result['Global'].items() %}
+              <li><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <div class="d-flex flex-column flex-md-row justify-content-center gap-3 mt-5">
+    <a href="{{ url_for('upload') }}" 
+       class="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+       style="min-width: 220px; padding: 0.75rem 1.5rem;">
+      <span class="fs-5 me-2">📤</span>
+      <span class="fs-5 fw-medium">Upload Another</span>
+    </a>
+
+    <a href="{{ url_for('manual_check') }}" 
+       class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+       style="min-width: 220px; padding: 0.75rem 1.5rem;">
+      <span class="fs-5 me-2">🔍</span>
+      <span class="fs-5 fw-medium">CrossCheck</span>
+    </a>
+  </div>
+</div>
+
+<style>
+  .alert-success pre, .alert-warning pre {
+    font-size: 1.1em;
+    line-height: 1.6;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid;
+    max-height: 300px;
+    overflow: auto;
+  }
+  
+  .alert-success pre {
+    background: rgba(25,135,84,0.15);
+    border-color: #198754;
+  }
+  
+  .alert-warning pre {
+    background: rgba(255,193,7,0.15);
+    border-color: #ffc107;
+  }
+</style>
+{% endblock %}

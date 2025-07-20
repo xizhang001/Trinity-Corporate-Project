@@ -1,0 +1,104 @@
+<!-- templates/manage_rankings.html (revised) -->
+{% extends "base.html" %}
+
+{% block title %}Manage Ranking Systems{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">Manage Ranking Systems</h2>
+    <a href="{{ url_for('upload') }}" class="btn btn-success">
+      <i class="bi bi-upload me-2"></i>Go to Upload Page
+    </a>
+  </div>
+  
+  <!-- Upload new ranking form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Upload New Ranking System</h5>
+    </div>
+    <div class="card-body">
+      <form method="POST" enctype="multipart/form-data">
+        <div class="row">
+          <div class="col-md-9 mb-3">
+            <label class="form-label">Ranking Excel File:</label>
+            <input type="file" class="form-control" name="ranking_file" accept=".xlsx" required>
+            <div class="form-text">Upload Excel (.xlsx) files only</div>
+          </div>
+          <div class="col-md-3 mb-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-upload me-2"></i>Upload
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Current rankings -->
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Available Ranking Systems</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>File Name</th>
+              <th>Sheets</th>
+              <th>Upload Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Default ranking -->
+            <tr>
+              <td>
+                <strong>Default Ranking</strong>
+              </td>
+              <td>TBS India 25</td>
+              <td>Pre-installed</td>
+              <td>
+                <span class="text-muted">System default</span>
+              </td>
+            </tr>
+            
+            <!-- Custom rankings -->
+            {% for filename, data in custom_rankings.items() %}
+            <tr>
+              <td>{{ filename }}</td>
+              <td>
+                <div class="d-flex flex-wrap gap-1">
+                  {% for sheet in data.sheets %}
+                  <span class="badge bg-secondary">{{ sheet }}</span>
+                  {% endfor %}
+                </div>
+              </td>
+              <td>{{ data.upload_date }}</td>
+              <td>
+                <form method="POST" class="d-inline">
+                  <input type="hidden" name="delete_ranking" value="{{ filename }}">
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="4" class="text-center py-4">
+                <div class="alert alert-info mb-0">
+                  <i class="bi bi-info-circle me-2"></i>
+                  No custom ranking systems uploaded yet
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

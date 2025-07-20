@@ -1,0 +1,283 @@
+<!-- templates/manual_check.html (updated) -->
+{% extends "base.html" %}
+{% block title %}Manual Check{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2 class="text-primary mb-4">Manual Crosscheck</h2>
+
+  {% if source or match_score %}
+    <div class="card shadow-sm p-3 mb-4 border-start border-info border-4">
+      {% if source %}
+        <p class="mb-1"><strong>Matched From:</strong> {{ source }}</p>
+      {% endif %}
+      {% if match_score is not none %}
+        <p class="mb-0"><strong>Fuzzy Match Score:</strong> {{ match_score }}%</p>
+      {% endif %}
+      {% if extraction_method %}
+        <p class="mb-0"><strong>Extraction Method:</strong> {{ extraction_method }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <!-- Evidence Section -->
+  <div class="card p-4 shadow-sm mb-4 border border-{{ 'success' if extraction_method == 'LLM' else 'warning' }}">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="text-{{ 'success' if extraction_method == 'LLM' else 'warning' }} mb-0">
+        <i class="bi bi-{{ 'robot' if extraction_method == 'LLM' else 'search' }} me-2"></i>
+        {{ 'Llama Extraction' if extraction_method == 'LLM' else 'Traditional Matching' }} Evidence
+      </h5>
+      <span class="badge bg-{{ 'success' if extraction_method == 'LLM' else 'warning' }}">
+        {{ 'AI Generated' if extraction_method == 'LLM' else 'Pattern Match' }}
+      </span>
+    </div>
+    <div class="alert alert-{{ 'success' if extraction_method == 'LLM' else 'warning' }} p-0">
+      <pre class="d-block mb-0 p-3">
+        {{ llm_evidence if extraction_method == 'LLM' else match_snippet }}
+      </pre>
+    </div>
+    <p class="text-muted mt-2 mb-0">
+      <small>
+        {% if extraction_method == 'LLM' %}
+          Full text evidence identified by Llama
+        {% else %}
+          Text snippet that triggered pattern matching
+        {% endif %}
+      </small>
+    </p>
+  </div>
+
+  <!-- Degree Level Section -->
+  {% if extraction_method == 'LLM' and llm_degree %}
+  <div class="card p-4 shadow-sm mb-4 border border-info">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="text-info mb-0">
+        <i class="bi bi-award me-2"></i> Degree Level
+      </h5>
+      <span class="badge bg-info">AI Identified</span>
+    </div>
+    <div class="alert alert-info p-0">
+      <pre class="d-block mb-0 p-3">{{ llm_degree }}</pre>
+    </div>
+    <p class="text-muted mt-2 mb-0"><small>Degree level identified by Llama</small></p>
+  </div>
+  {% endif %}
+
+  <!-- NEW: Llama Thought Process Section -->
+  {% if llm_thought_process %}
+  <div class="card p-4 shadow-sm mb-4 border border-secondary">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="text-secondary mb-0">
+        <i class="bi bi-robot me-2"></i> Llama Thought Process
+      </h5>
+      <span class="badge bg-secondary">AI Analysis</span>
+    </div>
+    <div class="alert alert-light p-0">
+      <pre class="d-block mb-0 p-3">{{ llm_thought_process }}</pre>
+    </div>
+    <div class="mt-2">
+      <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" 
+              data-bs-target="#thoughtProcessDetails" aria-expanded="false" aria-controls="thoughtProcessDetails">
+        <i class="bi bi-info-circle me-1"></i> About this analysis
+      </button>
+      <div class="collapse mt-2" id="thoughtProcessDetails">
+        <div class="card card-body">
+          <p class="mb-1"><strong>What is this?</strong></p>
+          <p class="mb-0">This shows the AI's step-by-step reasoning for identifying the educational institution. 
+          Even when traditional matching is used, this shows what the AI would have considered.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card p-4 shadow-sm bg-light mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="text-secondary d-flex align-items-center">
+        <i class="bi bi-file-text me-2"></i> Full Extracted Text
+      </h5>
+      <div class="text-muted" id="text-summary"></div>
+    </div>
+    <hr>
+    
+    {% if raw_text %}
+      <div class="overflow-auto border rounded p-2 bg-white" style="max-height: 500px;">
+        <pre id="extracted-text" style="white-space: pre-wrap; margin-bottom: 0;">{{ raw_text }}</pre>
+      </div>
+      <p class="text-muted mt-2 mb-0"><small>Showing full extracted text</small></p>
+    {% else %}
+      <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-2"></i> No text could be extracted from the documents
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="d-flex flex-column flex-md-row justify-content-center gap-3 mt-5">
+    <a href="{{ url_for('upload') }}" 
+       class="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+       style="min-width: 220px; padding: 0.75rem 1.5rem;">
+      <span class="fs-5 me-2">📤</span>
+      <span class="fs-5 fw-medium">Back to Upload</span>
+    </a>
+
+    <a href="{{ url_for('results') }}" 
+       class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+       style="min-width: 220px; padding: 0.75rem 1.5rem;">
+      <span class="fs-5 me-2">📊</span>
+      <span class="fs-5 fw-medium">Back to Results</span>
+    </a>
+
+    <a href="{{ url_for('search') }}" 
+       class="btn btn-outline-success d-flex align-items-center justify-content-center"
+       style="min-width: 220px; padding: 0.75rem 1.5rem;">
+      <span class="fs-5 me-2">🔍</span>
+      <span class="fs-5 fw-medium">Manual Search</span>
+    </a>
+  </div>
+</div>
+
+<style>
+  .alert-warning pre, .alert-success pre, .alert-info pre {
+    font-size: 1.1em;
+    line-height: 1.6;
+    border-radius: 5px;
+    border-left: 4px solid;
+    white-space: pre-wrap;
+  }
+  
+  .alert-warning pre {
+    background: rgba(255,193,7,0.15);
+    border-color: #ffc107;
+  }
+  
+  .alert-success pre {
+    background: rgba(25,135,84,0.15);
+    border-color: #198754;
+  }
+  
+  .alert-info pre {
+    background: rgba(13,202,240,0.15);
+    border-color: #0dcaf0;
+  }
+  
+  .alert-light pre {
+    background: rgba(248,249,250,1);
+    border-color: #e9ecef;
+    border-left: 4px solid #6c757d;
+  }
+  
+  .card {
+    border-radius: 10px;
+  }
+  
+  #extracted-text {
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .bi-robot::before {
+    content: "🤖";
+    font-family: Arial, sans-serif;
+  }
+  
+  .highlight {
+    background-color: #ffec99;
+    padding: 2px 4px;
+    border-radius: 4px;
+    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textElement = document.getElementById('extracted-text');
+    const summaryElement = document.getElementById('text-summary');
+    
+    if (textElement) {
+        const text = textElement.textContent;
+        
+        // Only process if there's actual text content
+        if (text.trim() !== "") {
+            const charCount = text.length;
+            const wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
+            const lineCount = text.split('\n').length;
+            
+            if (summaryElement) {
+                summaryElement.innerHTML = `
+                    <span class="badge bg-info">${lineCount.toLocaleString()} lines</span>
+                    <span class="badge bg-info">${wordCount.toLocaleString()} words</span>
+                    <span class="badge bg-info">${charCount.toLocaleString()} chars</span>
+                `;
+            }
+            
+            // Add syntax highlighting for better readability
+            const lines = text.split('\n');
+            let highlightedHTML = '';
+            
+            lines.forEach((line, index) => {
+                // Highlight potential institution names
+                let highlightedLine = line;
+                if (line.toLowerCase().includes('university') || 
+                    line.toLowerCase().includes('college') || 
+                    line.toLowerCase().includes('institute')) {
+                    highlightedLine = `<span class="text-primary fw-bold">${line}</span>`;
+                }
+                
+                // Add line numbers
+                highlightedHTML += `<div class="d-flex">
+                    <span class="text-muted me-3" style="min-width: 30px;">${index + 1}</span>
+                    <span>${highlightedLine}</span>
+                </div>`;
+            });
+            
+            textElement.innerHTML = highlightedHTML;
+            
+            // Highlight evidence in full text
+            const evidenceText = `{{ llm_evidence if llm_evidence else match_snippet }}`;
+            if (evidenceText && evidenceText.trim() !== "") {
+                const escapedEvidence = escapeRegExp(evidenceText);
+                const regex = new RegExp(escapedEvidence, 'gi');
+                const fullText = textElement.innerHTML;
+                const highlighted = fullText.replace(
+                    regex, 
+                    '<span class="highlight">$&</span>'
+                );
+                textElement.innerHTML = highlighted;
+            }
+            
+            // Highlight degree level keywords
+            const degreeKeywords = ["bachelor", "master", "b.sc", "m.sc", "b.tech", "m.tech", "b.e", "m.e", "b.com", "m.com", "ba", "ma"];
+            let degreeHighlighted = textElement.innerHTML;
+            
+            degreeKeywords.forEach(keyword => {
+                const regex = new RegExp(`\\b${escapeRegExp(keyword)}\\b`, 'gi');
+                degreeHighlighted = degreeHighlighted.replace(
+                    regex, 
+                    `<span class="text-info fw-bold">$&</span>`
+                );
+            });
+            
+            textElement.innerHTML = degreeHighlighted;
+            
+            // Scroll to first highlight
+            const firstHighlight = textElement.querySelector('.highlight');
+            if (firstHighlight) {
+                firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } else if (summaryElement) {
+            // No text content
+            summaryElement.innerHTML = '<span class="badge bg-warning">Empty text</span>';
+        }
+    } else if (summaryElement) {
+        // No text element at all
+        summaryElement.innerHTML = '<span class="badge bg-warning">No text extracted</span>';
+    }
+});
+
+// Helper function to escape special regex characters
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+</script>
+{% endblock %}

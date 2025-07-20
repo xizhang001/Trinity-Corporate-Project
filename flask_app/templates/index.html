@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Institution Ranking Checker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <h1 class="text-primary mb-4">Institution Ranking Checker</h1>
+
+  <!-- Function Flow -->
+  <div class="card shadow-sm mb-4 border-start border-primary border-4">
+    <div class="card-body">
+      <h3 class="card-title text-primary">🔍 How It Works</h3>
+      <ol class="mt-3">
+        <li>Manage Rankings - Use the default dataset or upload a custom ranking list.</li>
+        <li>Upload Documents - The system extracts institution names from transcripts, CVs, or reference letters.</li>
+        <li>View Results - Clearly see the matched institution, its tier ranking, and its basic information.</li>
+        <li>Cross-Check - Review automated results with highlighted source text. </li>
+        <li>Manual Search - Autocomplete helps quickly search institutions.</li>
+        <li>History - Temporarily save results for batch processing.</li>
+        <li>Shutdown - Safely close the local server after use.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Upload Requirements -->
+  <div class="card shadow-sm mb-4 border-start border-warning border-4">
+    <div class="card-body">
+      <h3 class="card-title text-warning">📁 File Requirements</h3>
+      <ul class="mt-3">
+        <li><strong>Transcript:</strong> PDF or Word document (DOCX) or image (JPG, PNG) </li>
+        <li><strong>CV:</strong> PDF or Word document (DOCX) or image (JPG, PNG)</li>
+        <li><strong>Reference Letter:</strong> PDF or Word document (DOCX) or image (JPG, PNG)</li>
+        <li><strong>Custom Ranking File (optional):</strong> Excel format (.xlsx), matching the official template structure</li>
+      </ul>
+      <p class="text-muted mt-2">Please ensure the files are clear and legible. The system prioritises transcript → CV → reference letter for best results.</p>
+    </div>
+  </div>
+
+  <!-- Team Introduction -->
+  <div class="card shadow-sm border-start border-success border-4 mb-5">
+    <div class="card-body">
+      <h3 class="card-title text-success">👥 About Our Team</h3>
+      <p><strong>We are a team of Master's in Business Analytics students at Trinity College Dublin (2024-2025).</strong></p>
+      <p>Leveraging Meta's LLaMA, NLP, OCR, and fuzzy matching, we built a tool to accelerate university verification against global rankings. Initially created to optimize Trinity Business School's admissions process, our solution accurately extracts and matches institution names from academic documents—cutting manual workload while improving transparency for applicants worldwide.</p>
+    </div>
+  </div>
+
+  <!-- Buttons with consistent sizing -->
+  <div class="d-flex justify-content-center gap-3 mb-5">
+    <a href="{{ url_for('upload') }}" class="btn btn-primary btn-lg d-flex align-items-center" style="min-width: 220px; padding: 0.75rem 1.5rem;">
+      <span class="fs-5 me-2">🚀</span>
+      <span class="fs-5 fw-medium">Start Matching</span>
+    </a>
+    <a href="{{ url_for('manual_check') }}" class="btn btn-outline-secondary btn-lg d-flex align-items-center" style="min-width: 220px; padding: 0.75rem 1.5rem;">
+      <span class="fs-5 me-2">🔎</span>
+      <span class="fs-5 fw-medium">Manual Search</span>
+    </a>
+  </div>
+
+</div>
+{% endblock %}
