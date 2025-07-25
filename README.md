@@ -4,6 +4,7 @@ Trinity Business School Corporate Project
 
 Design and Implementation of a Local Flask Application Using LLaMA for Automated Extraction and Matching of Indian Undergraduate Institutions
 
+A short demonstration video to showcase the key functionalities of the Institution Ranking Checker application: https://drive.google.com/file/d/1RmV_-e_zZY2Qck4l6uvciu-j3QvQhfCu/view
 
 ## Abstract
 This thesis details the design, development, and evaluation of the Institution Ranking Checker, a privacy-preserving, locally deployed application aimed at supporting the Trinity Business School (TBS) in the efficient screening of undergraduate applicants from Indian institutions. The tool automates the extraction and identification of institutions mentioned in admissions documents and cross-references them against a structured Excel-based institutional ranking sheet to support fair and consistent admissions decision-making.
